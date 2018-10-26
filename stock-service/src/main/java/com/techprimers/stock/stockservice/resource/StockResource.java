@@ -24,17 +24,24 @@ public class StockResource {
     RestTemplate restTemplate;
 
     @GetMapping("/{username}")
-    public List<Stock> getStock(@PathVariable("username") final String userName) {
+    public List<Qu> getStock(@PathVariable("username") final String userName) {
 
-        ResponseEntity<List<String>> quoteResponse = restTemplate.exchange("http://localhost:8300/rest/db/" + userName, HttpMethod.GET,
+//        ResponseEntity<List<String>> quoteResponse = restTemplate.exchange("http://localhost:8300/rest/db/" + userName, HttpMethod.GET,
+//                null, new ParameterizedTypeReference<List<String>>() {
+//                });
+        
+        ResponseEntity<List<String>> quoteResponse = restTemplate.exchange("http://db-service/rest/db/" + userName, HttpMethod.GET,
                 null, new ParameterizedTypeReference<List<String>>() {
                 });
 
 
         List<String> quotes = quoteResponse.getBody();
         return quotes
-                .stream()
-                .map(this::getStockPrice)
+                .stream() 
+                .map(qu -> {
+                	 Stock stck = getStockPrice(qu);
+                	 return new Qu(qu, stck.getQuote().getPrice());
+                })
                 .collect(Collectors.toList());
     }
 
@@ -43,7 +50,7 @@ public class StockResource {
             return YahooFinance.get(quote);
         } catch (IOException e) {
             e.printStackTrace();
-            return new Stock(quote);
+            return new Stock(quote); 
         }
     }
 }

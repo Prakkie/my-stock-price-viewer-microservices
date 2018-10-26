@@ -2,7 +2,7 @@ package com.techprimers.stock.stockservice.resource;
 
 import java.math.BigDecimal;
 
-class Qu {
+public class Qu {
 	private String quote;
 	private BigDecimal price;
 	

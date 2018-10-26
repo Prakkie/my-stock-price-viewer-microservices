@@ -13,6 +13,7 @@ import yahoofinance.Stock;
 import yahoofinance.YahooFinance;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -40,7 +41,13 @@ public class StockResource {
                 .stream() 
                 .map(qu -> {
                 	 Stock stck = getStockPrice(qu);
-                	 return new Qu(qu, stck.getQuote().getPrice());
+                	 try {
+						return new Qu(qu, stck.getQuote().getPrice());
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+						return new Qu(qu, BigDecimal.ZERO);
+					}
                 })
                 .collect(Collectors.toList());
     }
@@ -50,7 +57,7 @@ public class StockResource {
             return YahooFinance.get(quote);
         } catch (IOException e) {
             e.printStackTrace();
-            return new Stock(quote); 
+            return new Stock(quote);
         }
     }
 }
